@@ -1,5 +1,6 @@
 #include "GameEngine.h"
 #include "Game.h"
+#include "Player.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -131,10 +132,11 @@ void run_engine()
             if(event.type == SDL_QUIT){
                 isRunning = false;
             }
+            handle_player_events(event);
         }
-        SDL_SetRenderDrawColor(engineRenderer, 0, 0, 0, 255);
         SDL_RenderClear(engineRenderer);
 
+        move_player();
         render_game();
 
         SDL_RenderPresent(engineRenderer);
