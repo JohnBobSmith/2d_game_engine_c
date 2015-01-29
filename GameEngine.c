@@ -119,8 +119,8 @@ void run_engine()
         printf("Failed to load engine...");
     }
 
-    if(!init_game){
-        printf("Failed to init game...");
+    if(!init_game()){
+        printf("Failed to init game....");
     }
 
     if(!load_game()){
@@ -128,15 +128,16 @@ void run_engine()
     }
 
     while(isRunning){
-        while(SDL_PollEvent(&event) != 0){
+        while(SDL_PollEvent(&event)){
             if(event.type == SDL_QUIT){
                 isRunning = false;
             }
-            handle_player_events(event);
+            handle_player_events(&event);
         }
         SDL_RenderClear(engineRenderer);
 
         move_player();
+        move_camera();
         render_game();
 
         SDL_RenderPresent(engineRenderer);
