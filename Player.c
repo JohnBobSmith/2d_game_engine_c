@@ -1,11 +1,13 @@
 #include "Player.h"
 #include "Game.h"
+#include "GameObject.h"
 #include <math.h>
 #include <stdio.h>
 
 SDL_Texture *playerTexture = NULL;
 const int PLAYER_VELOCITY = 2;
-char pathToPlayerImage[] = "2d_game_engine_c/images/player.png";
+int currentBullet = 0;
+int mouseAngle;
 
 bool init_player()
 {
@@ -25,6 +27,8 @@ bool init_player()
 
 bool load_player()
 {
+    char pathToPlayerImage[] = "2d_game_engine_c/images/player.png";
+
     playerTexture = load_image_from_file(pathToPlayerImage);
     if(playerTexture == NULL){
         printf("Failed to load %s. Image not found!", pathToPlayerImage);
@@ -41,18 +45,22 @@ void handle_player_events(SDL_Event *event)
 
     if(event->type == SDL_KEYDOWN && event->key.repeat == 0){
         switch(event->key.keysym.sym){
+            case SDLK_w:
             case SDLK_UP:
                 playerVelocityY -= PLAYER_VELOCITY;
                 break;
 
+            case SDLK_s:
             case SDLK_DOWN:
                 playerVelocityY += PLAYER_VELOCITY;
                 break;
 
+            case SDLK_a:
             case SDLK_LEFT:
                 playerVelocityX -= PLAYER_VELOCITY;
                 break;
 
+            case SDLK_d:
             case SDLK_RIGHT:
                 playerVelocityX += PLAYER_VELOCITY;
                 break;
@@ -61,18 +69,23 @@ void handle_player_events(SDL_Event *event)
 
     if(event->type == SDL_KEYUP && event->key.repeat == 0){
         switch(event->key.keysym.sym){
+
+            case SDLK_w:
             case SDLK_UP:
                 playerVelocityY += PLAYER_VELOCITY;
                 break;
 
+            case SDLK_s:
             case SDLK_DOWN:
                 playerVelocityY -= PLAYER_VELOCITY;
                 break;
 
+            case SDLK_a:
             case SDLK_LEFT:
                 playerVelocityX += PLAYER_VELOCITY;
                 break;
 
+            case SDLK_d:
             case SDLK_RIGHT:
                 playerVelocityX -= PLAYER_VELOCITY;
                 break;
@@ -87,7 +100,22 @@ void handle_player_events(SDL_Event *event)
         result = atan2(mouseY - yCenter, mouseX - xCenter) * 180 / 3.14;
 
         playerAngle = result;
+        mouseAngle = result;
+    }
 
+    if(event->type == SDL_MOUSEBUTTONDOWN){
+        currentBullet += 1;
+
+        objectStorage[currentBullet].isDead = false;
+        objectStorage[currentBullet].angle = mouseAngle - 90;
+        objectStorage[currentBullet].xVelocity = BULLET_VELOCITY * (cos(mouseAngle * 3.14 / 180));
+        objectStorage[currentBullet].yVelocity = BULLET_VELOCITY * (sin(mouseAngle * 3.14 / 180));
+    }
+
+    if(event->type == SDL_MOUSEBUTTONUP){
+        if(currentBullet >= MAX_BULLETS - 1){
+            currentBullet = 0;
+        }
     }
 }
 

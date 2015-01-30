@@ -127,6 +127,9 @@ void run_engine()
         printf("Failed to load game...");
     }
 
+    load_object();
+    create_object();
+
     while(isRunning){
         while(SDL_PollEvent(&event)){
             if(event.type == SDL_QUIT){
@@ -136,6 +139,7 @@ void run_engine()
         }
         SDL_RenderClear(engineRenderer);
 
+        move_bullet();
         move_player();
         move_camera();
         render_game();

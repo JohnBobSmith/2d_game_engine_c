@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "GameObject.h"
 #include "Player.h"
 #include<stdio.h>
 
@@ -65,6 +66,7 @@ void render_game()
 {
     render_image(0, 0, LEVEL_WIDTH, LEVEL_HEIGHT, 0, backgroundTexture, &camera, NULL, SDL_FLIP_NONE);
     render_player(camera.x, camera.y);
+    render_object();
 }
 
 void close_game()
