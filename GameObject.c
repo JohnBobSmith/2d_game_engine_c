@@ -2,13 +2,17 @@
 #include "Game.h"
 #include "Player.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 SDL_Texture *bulletTexture = NULL;
 SDL_Texture *asteroidTexture = NULL;
 
-const int BULLET_VELOCITY = 5;
+const int BULLET_VELOCITY = 7;
 const int MAX_BULLETS = 25;
-const int MAX_ASTEROIDS = 15;
+const int MAX_ASTEROIDS = 60;
+
+int currentAsteroid = 25;
 
 void create_object()
 {
@@ -31,8 +35,8 @@ void create_object()
     //Create the asteroids, start where the last bullet object left off at.
     for(int i = MAX_BULLETS; i < MAX_BULLETS + MAX_ASTEROIDS; i++){
         objectStorage[i].texture = asteroidTexture;
-        objectStorage[i].xPosition = 150;
-        objectStorage[i].yPosition = 150;
+        objectStorage[i].xPosition = 0 ;
+        objectStorage[i].yPosition = 0;
         objectStorage[i].xVelocity = 0;
         objectStorage[i].yVelocity = 0;
         objectStorage[i].width = 70;
@@ -68,6 +72,7 @@ void move_bullet()
     //Move our bullets if they are not dead.
     //Set the point of origin for spawning bullets
     //to the player.
+
     for(int i = 0; i < MAX_BULLETS; i++){
         if(!objectStorage[i].isDead){
             objectStorage[i].xPosition += objectStorage[i].xVelocity;
@@ -84,7 +89,70 @@ void move_bullet()
             objectStorage[i].xPosition = playerPositionX - camera.x;
             objectStorage[i].yPosition = playerPositionY - camera.y;
         }
+
+        for(int j = MAX_BULLETS; j < MAX_BULLETS + MAX_ASTEROIDS; j++){
+            if(!objectStorage[i].isDead && !objectStorage[j].isDead){
+                if(check_collision(objectStorage[i].xPosition, objectStorage[i].yPosition, objectStorage[i].width,
+                            objectStorage[i].height, objectStorage[j].xPosition - camera.x - camera.x,
+                            objectStorage[j].yPosition - camera.y - camera.y, objectStorage[j].width, objectStorage[j].height)){
+
+                    objectStorage[i].isDead = true;
+                    objectStorage[j].isDead = true;
+                }
+            }
+        }
     }
+}
+
+void randomize_asteroid_position()
+{
+    //Randomize the asteroid positions.
+    int randomXPosition = rand() % (LEVEL_WIDTH - 100);
+    int randomYPosition = rand() % (LEVEL_HEIGHT - 100);
+    int randomAngle = rand() % 360;
+
+    //start randomization where bullets left off.
+    objectStorage[currentAsteroid].xPosition = randomXPosition;
+    objectStorage[currentAsteroid].yPosition = randomYPosition;
+    objectStorage[currentAsteroid].angle = randomAngle;
+
+    currentAsteroid += 1;
+}
+
+bool check_collision(int xA, int yA, int wA, int hA, int xB, int yB, int wB, int hB)
+{
+    int leftA, leftB;
+    int rightA, rightB;
+    int topA, topB;
+    int bottomA, bottomB;
+
+    leftA = xA;
+    rightA = xA + wA;
+    topA = yA;
+    bottomA = yA + hA;
+
+    leftB = xB;
+    rightB = xB + wB;
+    topB = yB;
+    bottomB = yB + hB;
+
+    if(bottomA <= topB){
+        return false;
+    }
+
+    if(topA >= bottomB){
+        return false;
+    }
+
+    if(rightA <= leftB){
+        return false;
+    }
+
+    if(leftA >= rightB){
+        return false;
+    }
+
+    return true;
 }
 
 void render_object()
@@ -92,7 +160,7 @@ void render_object()
     //Render moving objects, namely the bullets
     for(int i = 0; i < MAX_BULLETS; i++){
         if(!objectStorage[i].isDead){
-            render_image(objectStorage[i].xPosition, objectStorage[i].yPosition, objectStorage[i].width,
+            render_image(objectStorage[i].xPosition - camera.x, objectStorage[i].yPosition - camera.y, objectStorage[i].width,
                         objectStorage[i].height, objectStorage[i].angle, objectStorage[i].texture, NULL, NULL, SDL_FLIP_NONE);
         }
     }

@@ -1,8 +1,10 @@
 #include "GameEngine.h"
 #include "Game.h"
+#include "GameObject.h"
 #include "Player.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 //Some global engine variables.
 const int SCREEN_WIDTH = 640;
@@ -119,6 +121,8 @@ void close_engine()
 
 void run_engine()
 {
+    srand(time(NULL));
+
     SDL_Event event;
     bool isRunning = true;
 
@@ -142,6 +146,10 @@ void run_engine()
     load_object(); //Load our GameObject structure and related files.
     create_object(); //Create our GameObject's.
 
+    for(int i = MAX_BULLETS; i < MAX_BULLETS + MAX_ASTEROIDS; i++){
+        randomize_asteroid_position(); //Randomly place asteroids.
+    }
+
     while(isRunning){
         while(SDL_PollEvent(&event)){
             if(event.type == SDL_QUIT){
@@ -149,7 +157,8 @@ void run_engine()
             }
             handle_player_events(&event);
         }
-        //Call SDL_RenderClear at start to avoid weird visuals.
+        //Call SDL_RenderClear at start to avoid the chance of
+        //having weird visuals.
         SDL_RenderClear(engineRenderer);
 
         move_bullet(); //Move our objects and the player.
