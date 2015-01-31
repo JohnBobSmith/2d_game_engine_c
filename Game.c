@@ -3,15 +3,15 @@
 #include "Player.h"
 #include<stdio.h>
 
+//Some global game variables
 SDL_Texture *backgroundTexture = NULL;
 
 const int LEVEL_WIDTH = 1280;
 const int LEVEL_HEIGHT = 960;
 
-char pathToImage[] = "2d_game_engine_c/images/background.png";
-
 bool init_game()
 {
+    //initialize and load our player and the camera.
     camera.x = 0;
     camera.y = 0;
     camera.w = SCREEN_WIDTH;
@@ -32,9 +32,12 @@ bool init_game()
 
 bool load_game()
 {
-    backgroundTexture = load_image_from_file(pathToImage);
+    //Load all our images into the SDL_Texture datatype.
+    char pathToBackgroundImage[] = "images/background.png";
+
+    backgroundTexture = load_image_from_file(pathToBackgroundImage);
     if(backgroundTexture == NULL){
-        printf("Failed to load %s. Image not found!", pathToImage);
+        printf("Failed to load %s. Image not found!", pathToBackgroundImage);
         return false;
     }
     return true;
@@ -42,13 +45,16 @@ bool load_game()
 
 void move_camera()
 {
+    //Move the camera based on the players current position.
     camera.x = (playerPositionX + playerWidth / 2) - SCREEN_WIDTH / 2;
     camera.y = (playerPositionY + playerHeight / 2) - SCREEN_HEIGHT / 2;
 
+    //If the camera moves off screen in any way...
     if(camera.x < 0) {
-        camera.x = 0;
+        camera.x = 0; //Stop camera movement, while allowing our player to move.
     }
 
+    //Likewise for these next 3 conditions.
     if(camera.y < 0){
         camera.y = 0;
     }
@@ -64,6 +70,8 @@ void move_camera()
 
 void render_game()
 {
+    //Render all images. Note the order in which we render these images!
+    //The background must always be first!
     render_image(0, 0, LEVEL_WIDTH, LEVEL_HEIGHT, 0, backgroundTexture, &camera, NULL, SDL_FLIP_NONE);
     render_player(camera.x, camera.y);
     render_object();
@@ -71,6 +79,7 @@ void render_game()
 
 void close_game()
 {
+    //Free our resources
     SDL_DestroyTexture(backgroundTexture);
     backgroundTexture = NULL;
     free_player_resources();

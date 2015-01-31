@@ -3,6 +3,9 @@
 
 #include "GameEngine.h"
 
+//Not much inside this header. Just some prototypes,
+//and our constant PLAYER_VELOCITY variable.
+
 const int PLAYER_VELOCITY;
 
 int playerPositionX, playerPositionY;

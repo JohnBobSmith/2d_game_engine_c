@@ -4,6 +4,9 @@
 #include "GameEngine.h"
 #include <stdbool.h>
 
+//Contains our Object struct. All game objects (bullets, asteroids, etc.)
+//should make use of this struct.
+
 typedef struct Object
 {
     SDL_Texture *texture;

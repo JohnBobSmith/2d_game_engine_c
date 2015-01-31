@@ -3,6 +3,8 @@
 
 #include "GameEngine.h"
 
+//Not much in here. Just our game function prototypes and the camera.
+
 SDL_Rect camera;
 
 const int LEVEL_WIDTH;

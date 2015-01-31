@@ -4,14 +4,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+//Some global engine variables.
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 
+//Note that the renderer and window should never
+//need to be touched outside of this file.
 SDL_Window *engineWindow = NULL;
 SDL_Renderer *engineRenderer = NULL;
 
 SDL_Texture *load_rendered_text(char text[], TTF_Font *font, SDL_Color textColor)
 {
+    //Load text into a texture so that we can call render_image() on it.
     SDL_Texture *newTexture = NULL;
     SDL_Surface *textSurface = TTF_RenderText_Blended(font, text, textColor);
 
@@ -29,6 +33,7 @@ SDL_Texture *load_rendered_text(char text[], TTF_Font *font, SDL_Color textColor
 
 SDL_Texture *load_image_from_file(char path[])
 {
+    //Load images into the SDL_Texture datatype so that we can call render_image() on it.
 	SDL_Texture* newTexture = NULL;
 	SDL_Surface* loadedSurface = IMG_Load(path);
 
@@ -47,12 +52,16 @@ SDL_Texture *load_image_from_file(char path[])
 void render_image(int xPosition, int yPosition, int width, int height, float angle, SDL_Texture *texture,
                                     SDL_Rect *sRect, SDL_Point *center, SDL_RendererFlip flip)
 {
+    //Render an image, either statically (no movement) or dynamically (with movement).
+    //Also supports our camera via the *sRect paramater.
+
     SDL_Rect dRect = {xPosition, yPosition, width, height};
     SDL_RenderCopyEx(engineRenderer, texture, sRect, &dRect, angle, center, flip);
 }
 
 bool init_engine()
 {
+    //Initialize all SDL libraries, create the window and the renderer.
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0){
         printf("Failed to init video... SDL Error: %s", SDL_GetError());
         return false;
@@ -94,11 +103,13 @@ bool init_engine()
 
 bool load_engine()
 {
+    //No extra data to load here. Things like fonts would be loaded here.
     return true;
 }
 
 void close_engine()
 {
+    //Cleanup everything.
     SDL_DestroyRenderer(engineRenderer);
     SDL_DestroyWindow(engineWindow);
 
@@ -111,6 +122,7 @@ void run_engine()
     SDL_Event event;
     bool isRunning = true;
 
+    //Load and init the engine and the game by calling relevant functions.
     if(!init_engine()){
         printf("Failed to init engine...");
     }
@@ -127,8 +139,8 @@ void run_engine()
         printf("Failed to load game...");
     }
 
-    load_object();
-    create_object();
+    load_object(); //Load our GameObject structure and related files.
+    create_object(); //Create our GameObject's.
 
     while(isRunning){
         while(SDL_PollEvent(&event)){
@@ -137,16 +149,17 @@ void run_engine()
             }
             handle_player_events(&event);
         }
+        //Call SDL_RenderClear at start to avoid weird visuals.
         SDL_RenderClear(engineRenderer);
 
-        move_bullet();
+        move_bullet(); //Move our objects and the player.
         move_player();
         move_camera();
-        render_game();
+        render_game(); //Render all our images.
 
-        SDL_RenderPresent(engineRenderer);
+        SDL_RenderPresent(engineRenderer); //Finally, update the frame and render it to the screen.
     }
-    close_game();
+    close_game(); //Close the game before the engine!
     close_engine();
 }
 

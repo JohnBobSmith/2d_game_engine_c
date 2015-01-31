@@ -7,6 +7,10 @@
 #include <SDL2/SDL_mixer.h>
 #include <stdbool.h>
 
+//All game engine functions can be found here.
+//Note the render_image() function and the
+//load_image_from_file() function.
+
 const int SCREEN_WIDTH;
 const int SCREEN_HEIGHT;
 
