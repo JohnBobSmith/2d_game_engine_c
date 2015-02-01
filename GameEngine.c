@@ -15,11 +15,13 @@ const int SCREEN_HEIGHT = 480;
 SDL_Window *engineWindow = NULL;
 SDL_Renderer *engineRenderer = NULL;
 
-SDL_Texture *load_rendered_text(char text[], TTF_Font *font, SDL_Color textColor)
+TTF_Font *droidFont = NULL;
+
+SDL_Texture *load_rendered_text(char text[], SDL_Color textColor)
 {
     //Load text into a texture so that we can call render_image() on it.
     SDL_Texture *newTexture = NULL;
-    SDL_Surface *textSurface = TTF_RenderText_Blended(font, text, textColor);
+    SDL_Surface *textSurface = TTF_RenderText_Blended(droidFont, text, textColor);
 
     if(textSurface == NULL){
         printf("Failed to render text surface... SDL_ttf Error: %s", TTF_GetError());
@@ -105,7 +107,14 @@ bool init_engine()
 
 bool load_engine()
 {
-    //No extra data to load here. Things like fonts would be loaded here.
+    char pathToDroidFont[] = "fonts/droid.ttf";
+
+    droidFont = TTF_OpenFont(pathToDroidFont, 48);
+    if(droidFont == NULL){
+        printf("Failed to open font %s ", pathToDroidFont);
+        return false;
+    }
+
     return true;
 }
 
@@ -150,6 +159,8 @@ void run_engine()
         randomize_asteroid_position(); //Randomly place asteroids.
     }
 
+    init_button(); //init our buttons.
+
     while(isRunning){
         while(SDL_PollEvent(&event)){
             if(event.type == SDL_QUIT){
@@ -161,10 +172,17 @@ void run_engine()
         //having weird visuals.
         SDL_RenderClear(engineRenderer);
 
-        move_bullet(); //Move our objects and the player.
-        move_player();
-        move_camera();
-        render_game(); //Render all our images.
+        if(GAME_STATE_CURRENT == 1){
+            move_bullet(); //Move our objects and the player.
+            move_player();
+            move_camera();
+            render_game(); //Render all our images.
+        }
+
+        if(GAME_STATE_CURRENT == 2){
+            init_menu();
+            render_menu();
+        }
 
         SDL_RenderPresent(engineRenderer); //Finally, update the frame and render it to the screen.
     }

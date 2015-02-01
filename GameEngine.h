@@ -14,7 +14,7 @@
 const int SCREEN_WIDTH;
 const int SCREEN_HEIGHT;
 
-SDL_Texture *load_rendered_text(char text[], TTF_Font *font, SDL_Color textColor);
+SDL_Texture *load_rendered_text(char text[], SDL_Color textColor);
 SDL_Texture *load_image_from_file(char path[]);
 void render_image(int xPosition, int yPosition, int width, int height, float angle, SDL_Texture *texture,
                                 SDL_Rect *sRect, SDL_Point *center, SDL_RendererFlip flip);

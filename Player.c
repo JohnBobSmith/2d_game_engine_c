@@ -7,7 +7,7 @@
 //Some global player variables
 SDL_Texture *playerTexture = NULL;
 const int PLAYER_VELOCITY = 2;
-int currentBullet = 0;
+int currentBullet = 2;
 int mouseAngle;
 
 bool init_player()
@@ -119,7 +119,7 @@ void handle_player_events(SDL_Event *event)
 
     if(event->type == SDL_MOUSEBUTTONUP){ //If we release the left mouse button...
         if(currentBullet >= MAX_BULLETS - 1){ //If We've exceeded out bullet count...
-            currentBullet = 0; //reset the bullet count
+            currentBullet = 2; //reset the bullet count
         }
     }
 }

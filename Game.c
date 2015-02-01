@@ -5,6 +5,10 @@
 
 //Some global game variables
 SDL_Texture *backgroundTexture = NULL;
+SDL_Texture *menuTexture = NULL;
+
+GAME_STATE_CURRENT = 2; //The current state of the game.
+//For the above variable, 2 is menu, one is playing the game.
 
 const int LEVEL_WIDTH = 1280;
 const int LEVEL_HEIGHT = 960;
@@ -34,13 +38,32 @@ bool load_game()
 {
     //Load all our images into the SDL_Texture datatype.
     char pathToBackgroundImage[] = "images/background.png";
+    char pathToMainMenuImage[] = "images/mainmenu_bg.png";
 
     backgroundTexture = load_image_from_file(pathToBackgroundImage);
     if(backgroundTexture == NULL){
         printf("Failed to load %s. Image not found!", pathToBackgroundImage);
         return false;
     }
+
+    menuTexture = load_image_from_file(pathToMainMenuImage);
+    if(menuTexture == NULL){
+        printf("Failed to load %s. Image not found!", pathToMainMenuImage);
+        return false;
+    }
+
     return true;
+}
+
+void init_menu()
+{
+    for(int i = 0; i < MAX_BUTTONS; i++){
+        objectStorage[i].isDead = false;
+    }
+
+    for(int i = MAX_BUTTONS; i < MAX_BULLETS + MAX_ASTEROIDS; i++){
+        objectStorage[i].isDead = true;
+    }
 }
 
 void move_camera()
@@ -76,6 +99,13 @@ void render_game()
     render_player(camera.x, camera.y);
     render_object();
 }
+
+void render_menu()
+{
+    render_image(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, menuTexture, NULL, NULL, SDL_FLIP_NONE);
+    render_object();
+}
+
 
 void close_game()
 {

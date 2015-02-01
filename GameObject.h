@@ -10,6 +10,7 @@
 typedef struct Object
 {
     SDL_Texture *texture;
+    SDL_Texture *fontTexture;
 
     int xPosition, yPosition;
     int xVelocity, yVelocity;
@@ -22,14 +23,16 @@ typedef struct Object
 
 object *objectStorage;
 
-const int MAX_BULLETS;
 const int BULLET_VELOCITY;
+const int MAX_BUTTONS;
+const int MAX_BULLETS;
 const int MAX_ASTEROIDS;
 
 void create_object();
 bool load_object();
 void move_bullet();
 void randomize_asteroid_position();
+void init_button();
 bool check_collision(int xA, int yA, int wA, int hA, int xB, int yB, int wB, int hB);
 void render_object();
 void free_object_resources();
