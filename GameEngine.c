@@ -123,9 +123,16 @@ void close_engine()
     //Cleanup everything.
     SDL_DestroyRenderer(engineRenderer);
     SDL_DestroyWindow(engineWindow);
+    TTF_CloseFont(droidFont);
 
     engineRenderer = NULL;
     engineWindow = NULL;
+    droidFont = NULL;
+
+    IMG_Quit();
+    TTF_Quit();
+    Mix_Quit();
+    SDL_Quit();
 }
 
 void run_engine()
@@ -134,6 +141,9 @@ void run_engine()
 
     SDL_Event event;
     bool isRunning = true;
+
+    bool didWeInitMenu = false; //Used to call out init functions only once
+    bool didWeInitGame = false; //inside of the loop.
 
     //Load and init the engine and the game by calling relevant functions.
     if(!init_engine()){
@@ -172,21 +182,47 @@ void run_engine()
         //having weird visuals.
         SDL_RenderClear(engineRenderer);
 
-        if(GAME_STATE_CURRENT == 1){
-            move_bullet(); //Move our objects and the player.
-            move_player();
-            move_camera();
-            render_game(); //Render all our images.
-        }
+        switch(GAME_STATE_CURRENT) //Check our game state variable...
+        {
+            case 1:
+                if(!didWeInitGame){
+                    init_game_state_play();
+                    didWeInitGame = true;
+                    didWeInitMenu = false;
+                }
+                move_bullet(); //Move our objects and the player.
+                move_player();
+                move_camera();
+                render_game(); //Render all our images.
+                break;
 
-        if(GAME_STATE_CURRENT == 2){
-            init_menu();
-            render_menu();
+            case 2:
+                if(!didWeInitMenu){
+                    init_game_state_menu();
+                    didWeInitGame = false;
+                    didWeInitMenu = true;
+                }
+                render_menu();
+                break;
+
+            case 3:
+                printf("Exiting game. Goodbye!");
+                isRunning = false;
+                close_game();
+                close_engine();
+                break;
+
+            default:
+                printf("Something went horribly wrong with the game state system...\n");
+                printf("Now exiting game.");
+                close_game();
+                close_engine();
+                break;
         }
 
         SDL_RenderPresent(engineRenderer); //Finally, update the frame and render it to the screen.
     }
-    close_game(); //Close the game before the engine!
+    close_game(); //If we exit because we pressed the "X" button, cleanup.
     close_engine();
 }
 

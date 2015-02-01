@@ -9,6 +9,7 @@ SDL_Texture *playerTexture = NULL;
 const int PLAYER_VELOCITY = 2;
 int currentBullet = 2;
 int mouseAngle;
+bool isMousePressed = false;
 
 bool init_player()
 {
@@ -68,6 +69,10 @@ void handle_player_events(SDL_Event *event)
             case SDLK_RIGHT:
                 playerVelocityX += PLAYER_VELOCITY;
                 break;
+
+            case SDLK_ESCAPE: //If we press escape, open the menu.
+                GAME_STATE_CURRENT = 2;
+                break;
         }
     }
 
@@ -107,7 +112,8 @@ void handle_player_events(SDL_Event *event)
         mouseAngle = result;
     }
 
-    if(event->type == SDL_MOUSEBUTTONDOWN){ //If we press the left mouse button...
+    if(event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_LEFT && GAME_STATE_CURRENT == 1){
+        //If we press the left mouse button and we are playing the game...
         currentBullet += 1; //Update the bullet that is currently being fired...
 
         objectStorage[currentBullet].isDead = false; //And set that bullets properties acordingly.
@@ -117,9 +123,24 @@ void handle_player_events(SDL_Event *event)
         objectStorage[currentBullet].yVelocity = BULLET_VELOCITY * (sin(mouseAngle * 3.14 / 180));
     }
 
-    if(event->type == SDL_MOUSEBUTTONUP){ //If we release the left mouse button...
+    if(event->type == SDL_MOUSEBUTTONUP && GAME_STATE_CURRENT == 1){ //If we release the left mouse button...
         if(currentBullet >= MAX_BULLETS - 1){ //If We've exceeded out bullet count...
             currentBullet = 2; //reset the bullet count
+        }
+    }
+
+    if(event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_LEFT && GAME_STATE_CURRENT == 2){
+        //if we press the left mouse button and we are in the main menu...
+        if(check_collision(event->button.x, event->button.y, 4, 4, objectStorage[0].xPosition, objectStorage[0].yPosition,
+                                    objectStorage[0].width, objectStorage[0].height)){
+
+            GAME_STATE_CURRENT = 1; //Start playing if we press play.
+        }
+
+        if(check_collision(event->button.x, event->button.y, 4, 4, objectStorage[1].xPosition, objectStorage[1].yPosition,
+                                    objectStorage[1].width, objectStorage[1].height)){
+
+            GAME_STATE_CURRENT = 3; //Exit if we press exit.
         }
     }
 }
@@ -138,6 +159,14 @@ void move_player()
     //If the player moves off screen on the Y axis...
     if(playerPositionY < 0 || (playerPositionY + playerHeight) > LEVEL_HEIGHT){
         playerPositionY -= playerVelocityY; //Stop movement.
+    }
+
+    for(int i = MAX_BULLETS; i < MAX_BULLETS + MAX_ASTEROIDS; i++){
+        if(check_collision(playerPositionX, playerPositionY, playerWidth, playerHeight, objectStorage[i].xPosition,
+                            objectStorage[i].yPosition, objectStorage[i].width, objectStorage[i].height)){
+
+            printf("Collision between player and asteroid detected!\n");
+        }
     }
 }
 

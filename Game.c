@@ -8,14 +8,13 @@ SDL_Texture *backgroundTexture = NULL;
 SDL_Texture *menuTexture = NULL;
 
 GAME_STATE_CURRENT = 2; //The current state of the game.
-//For the above variable, 2 is menu, one is playing the game.
-
+//For the above variable, 3 is exit, 2 is menu, 1 is playing.
 const int LEVEL_WIDTH = 1280;
 const int LEVEL_HEIGHT = 960;
 
 bool init_game()
 {
-    //initialize and load our player and the camera.
+    //initialize and load our player and the camera, and all game objects.
     camera.x = 0;
     camera.y = 0;
     camera.w = SCREEN_WIDTH;
@@ -55,7 +54,7 @@ bool load_game()
     return true;
 }
 
-void init_menu()
+void init_game_state_menu()
 {
     for(int i = 0; i < MAX_BUTTONS; i++){
         objectStorage[i].isDead = false;
@@ -63,6 +62,21 @@ void init_menu()
 
     for(int i = MAX_BUTTONS; i < MAX_BULLETS + MAX_ASTEROIDS; i++){
         objectStorage[i].isDead = true;
+    }
+}
+
+void init_game_state_play()
+{
+    for(int i = 0; i < MAX_BUTTONS; i++){
+        objectStorage[i].isDead = true;
+    }
+
+    for(int i = MAX_BUTTONS; i < MAX_BULLETS; i++){
+        objectStorage[i].isDead = true;
+    }
+
+    for(int i = MAX_BULLETS; i < MAX_BULLETS + MAX_ASTEROIDS; i++){
+        objectStorage[i].isDead = false;
     }
 }
 

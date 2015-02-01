@@ -15,7 +15,8 @@ const int LEVEL_HEIGHT;
 
 bool init_game();
 bool load_game();
-void init_menu();
+void init_game_state_menu();
+void init_game_state_play();
 void move_camera();
 void render_game();
 void render_menu();

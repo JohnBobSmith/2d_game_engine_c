@@ -61,7 +61,7 @@ void create_object()
         objectStorage[i].width = 70;
         objectStorage[i].height = 70;
         objectStorage[i].angle = 0;
-        objectStorage[i].isDead = false;
+        objectStorage[i].isDead = true;
     }
 }
 
@@ -245,4 +245,16 @@ void free_object_resources()
 {
     //Cleanup resources
     free(objectStorage);
+
+    SDL_DestroyTexture(bulletTexture);
+    SDL_DestroyTexture(asteroidTexture);
+    SDL_DestroyTexture(buttonTexture);
+    SDL_DestroyTexture(fontTexture01);
+    SDL_DestroyTexture(fontTexture02);
+
+    bulletTexture = NULL;
+    asteroidTexture = NULL;
+    buttonTexture = NULL;
+    fontTexture01 = NULL;
+    fontTexture02 = NULL;
 }
