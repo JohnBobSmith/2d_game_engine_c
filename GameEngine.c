@@ -184,23 +184,23 @@ void run_engine()
 
         switch(GAME_STATE_CURRENT) //Check our game state variable...
         {
-            case 1:
+            case 1: //If equal to N value...
                 if(!didWeInitGame){
-                    init_game_state_play();
-                    didWeInitGame = true;
+                    init_game_state_play(); //Do something, like...
                     didWeInitMenu = false;
+                    didWeInitGame = true;
                 }
-                move_bullet(); //Move our objects and the player.
+                move_bullet(); //Moving our objects and the player.
                 move_player();
                 move_camera();
-                render_game(); //Render all our images.
+                render_game(); //And rendering images.
                 break;
 
             case 2:
                 if(!didWeInitMenu){
                     init_game_state_menu();
-                    didWeInitGame = false;
                     didWeInitMenu = true;
+                    didWeInitGame = false;
                 }
                 render_menu();
                 break;
@@ -208,8 +208,6 @@ void run_engine()
             case 3:
                 printf("Exiting game. Goodbye!");
                 isRunning = false;
-                close_game();
-                close_engine();
                 break;
 
             default:
@@ -222,7 +220,7 @@ void run_engine()
 
         SDL_RenderPresent(engineRenderer); //Finally, update the frame and render it to the screen.
     }
-    close_game(); //If we exit because we pressed the "X" button, cleanup.
+    close_game(); //If we exit, clean up everything
     close_engine();
 }
 

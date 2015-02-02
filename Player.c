@@ -161,11 +161,11 @@ void move_player()
         playerPositionY -= playerVelocityY; //Stop movement.
     }
 
-    for(int i = MAX_BULLETS; i < MAX_BULLETS + MAX_ASTEROIDS; i++){
+    for(int i = MAX_BULLETS; i < MAX_BULLETS + MAX_ASTEROIDS; i++){ //If we run into the asteroids...
         if(check_collision(playerPositionX, playerPositionY, playerWidth, playerHeight, objectStorage[i].xPosition,
                             objectStorage[i].yPosition, objectStorage[i].width, objectStorage[i].height)){
 
-            printf("Collision between player and asteroid detected!\n");
+            //printf("Collision between player and asteroid detected!\n");
         }
     }
 }
