@@ -1,6 +1,7 @@
 #include "GameEngine.h"
 #include "Game.h"
 #include "GameObject.h"
+#include "GameEffects.h"
 #include "Player.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -165,9 +166,12 @@ void run_engine()
     load_object(); //Load our GameObject structure and related files.
     create_object(); //Create our GameObject's.
 
-    for(int i = MAX_BULLETS; i < MAX_BULLETS + MAX_ASTEROIDS; i++){
+    for(int i = 0; i < MAX_ASTEROIDS; i++){
         randomize_asteroid_position(); //Randomly place asteroids.
     }
+
+    //load_effect(); //load our effects files.
+    //init_effect(); //Create our effects.
 
     init_button(); //init our buttons.
 

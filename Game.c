@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "GameObject.h"
+#include "GameAudio.h"
 #include "Player.h"
 #include<stdio.h>
 
@@ -14,7 +15,7 @@ const int LEVEL_HEIGHT = 960;
 
 bool init_game()
 {
-    //initialize and load our player and the camera, and all game objects.
+    //initialize and load our player and the camera, and other things
     camera.x = 0;
     camera.y = 0;
     camera.w = SCREEN_WIDTH;
@@ -27,6 +28,11 @@ bool init_game()
 
     if(!load_player()){
         printf("Failed to load player...");
+        return false;
+    }
+
+    if(!load_audio()){
+        printf("Failed to load audio...");
         return false;
     }
 
@@ -57,26 +63,22 @@ bool load_game()
 void init_game_state_menu()
 {
     for(int i = 0; i < MAX_BUTTONS; i++){
-        objectStorage[i].isDead = false;
+        Button[i].isDead = false;
     }
 
-    for(int i = MAX_BUTTONS; i < MAX_BULLETS + MAX_ASTEROIDS; i++){
-        objectStorage[i].isDead = true;
+    for(int i = 0; i < MAX_BULLETS; i++){
+        Bullet[i].isDead = true;
+    }
+
+    for(int i = 0; i < MAX_ASTEROIDS; i++){
+        Asteroid[i].isDead = true;
     }
 }
 
 void init_game_state_play()
 {
     for(int i = 0; i < MAX_BUTTONS; i++){
-        objectStorage[i].isDead = true;
-    }
-
-    for(int i = MAX_BUTTONS; i < MAX_BULLETS; i++){
-        objectStorage[i].isDead = true;
-    }
-
-    for(int i = MAX_BULLETS; i < MAX_BULLETS + MAX_ASTEROIDS; i++){
-        objectStorage[i].isDead = false;
+        Button[i].isDead = true;
     }
 }
 
@@ -127,4 +129,5 @@ void close_game()
     SDL_DestroyTexture(backgroundTexture);
     backgroundTexture = NULL;
     free_player_resources();
+    close_audio();
 }

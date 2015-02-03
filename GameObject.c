@@ -1,5 +1,7 @@
 #include "GameObject.h"
 #include "Game.h"
+#include "GameAudio.h"
+#include "GameEffects.h"
 #include "Player.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,56 +14,57 @@ SDL_Texture *fontTexture01 = NULL;
 SDL_Texture *fontTexture02 = NULL;
 
 const int BULLET_VELOCITY = 7;
+
 const int MAX_BUTTONS = 2;
 const int MAX_BULLETS = 25;
 const int MAX_ASTEROIDS = 15;
 
-int currentAsteroid = 25;
+int currentAsteroid = 0;
 
 void create_object()
 {
-    //Allocate memory to an array of type *object.
-    objectStorage = malloc(sizeof(object) * 100);
+    //Allocate memory to all pointers of gameObject.
+    Button = malloc(sizeof(gameObject) * MAX_BUTTONS);
+    Bullet = malloc(sizeof(gameObject) * MAX_BULLETS);
+    Asteroid = malloc(sizeof(gameObject) * MAX_ASTEROIDS);
 
     for(int i = 0; i < MAX_BUTTONS; i++){
-        objectStorage[i].texture = buttonTexture;
-        objectStorage[i].fontTexture = NULL;
-        objectStorage[i].xPosition = 250;
-        objectStorage[i].yPosition = 250;
-        objectStorage[i].xVelocity = 0;
-        objectStorage[i].yVelocity = 0;
-        objectStorage[i].width = 256;
-        objectStorage[i].height = 96;
-        objectStorage[i].angle = 0;
-        objectStorage[i].isDead = true;
+        Button[i].angle = 0;
+        Button[i].xPosition = 0;
+        Button[i].yPosition = 0;
+        Button[i].width = 256;
+        Button[i].height = 96;
+        Button[i].xVelocity = 0;
+        Button[i].yVelocity = 0;
+        Button[i].texture = buttonTexture;
+        Button[i].fontTexture = NULL;
+        Button[i].isDead = true;
     }
 
-    //Create the bullets. Start where the last button object left off at.
-    for(int i = MAX_BUTTONS; i < MAX_BULLETS; i++){
-        objectStorage[i].texture = bulletTexture;
-        objectStorage[i].fontTexture = NULL;
-        objectStorage[i].xPosition = 50;
-        objectStorage[i].yPosition = 50;
-        objectStorage[i].xVelocity = 0;
-        objectStorage[i].yVelocity = 0;
-        objectStorage[i].width = 25;
-        objectStorage[i].height = 50;
-        objectStorage[i].angle = 0;
-        objectStorage[i].isDead = true;
+    for(int i = 0; i < MAX_BULLETS; i++){
+        Bullet[i].angle = 0;
+        Bullet[i].xPosition = 0;
+        Bullet[i].yPosition = 0;
+        Bullet[i].width = 25;
+        Bullet[i].height = 50;
+        Bullet[i].xVelocity = 0;
+        Bullet[i].yVelocity = 0;
+        Bullet[i].texture = bulletTexture;
+        Bullet[i].fontTexture = NULL;
+        Bullet[i].isDead = true;
     }
 
-    //Create the asteroids, start where the last bullet object left off at.
-    for(int i = MAX_BULLETS; i < MAX_BULLETS + MAX_ASTEROIDS; i++){
-        objectStorage[i].texture = asteroidTexture;
-        objectStorage[i].fontTexture = NULL;
-        objectStorage[i].xPosition = 0 ;
-        objectStorage[i].yPosition = 0;
-        objectStorage[i].xVelocity = 0;
-        objectStorage[i].yVelocity = 0;
-        objectStorage[i].width = 70;
-        objectStorage[i].height = 70;
-        objectStorage[i].angle = 0;
-        objectStorage[i].isDead = true;
+    for(int i = 0; i < MAX_ASTEROIDS; i++){
+        Asteroid[i].angle = 0;
+        Asteroid[i].xPosition = 0;
+        Asteroid[i].yPosition = 0;
+        Asteroid[i].width = 70;
+        Asteroid[i].height = 70;
+        Asteroid[i].xVelocity = 0;
+        Asteroid[i].yVelocity = 0;
+        Asteroid[i].texture = asteroidTexture;
+        Asteroid[i].fontTexture = NULL;
+        Asteroid[i].isDead = true;
     }
 }
 
@@ -116,31 +119,31 @@ void move_bullet()
     //Set the point of origin for spawning bullets
     //to the player.
 
-    for(int i = MAX_BUTTONS; i < MAX_BULLETS; i++){
-        if(!objectStorage[i].isDead){
-            objectStorage[i].xPosition += objectStorage[i].xVelocity;
-            objectStorage[i].yPosition += objectStorage[i].yVelocity;
+    for(int i = 0; i < MAX_BULLETS; i++){
+        if(!Bullet[i].isDead){
+            Bullet[i].xPosition += Bullet[i].xVelocity;
+            Bullet[i].yPosition += Bullet[i].yVelocity;
         }
 
-        if(objectStorage[i].xPosition < 0 || objectStorage[i].xPosition > SCREEN_WIDTH ||
-                objectStorage[i].yPosition < 0 || objectStorage[i].yPosition > SCREEN_HEIGHT){
+        if(Bullet[i].xPosition < 0 || Bullet[i].xPosition > SCREEN_WIDTH ||
+                    Bullet[i].yPosition < 0 || Bullet[i].yPosition > SCREEN_HEIGHT){
 
-            objectStorage[i].isDead = true;
+            Bullet[i].isDead = true;
         }
 
-        if(objectStorage[i].isDead){
-            objectStorage[i].xPosition = playerPositionX - camera.x;
-            objectStorage[i].yPosition = playerPositionY - camera.y;
+        if(Bullet[i].isDead){
+            Bullet[i].xPosition = playerPositionX - camera.x;
+            Bullet[i].yPosition = playerPositionY - camera.y;
         }
 
-        for(int j = MAX_BULLETS; j < MAX_BULLETS + MAX_ASTEROIDS; j++){
-            if(!objectStorage[i].isDead && !objectStorage[j].isDead){
-                if(check_collision(objectStorage[i].xPosition, objectStorage[i].yPosition, objectStorage[i].width,
-                            objectStorage[i].height, objectStorage[j].xPosition - camera.x - camera.x,
-                            objectStorage[j].yPosition - camera.y - camera.y, objectStorage[j].width, objectStorage[j].height)){
+        for(int j = 0; j < MAX_ASTEROIDS; j++){
+            if(!Bullet[i].isDead && !Asteroid[j].isDead){
+                if(check_collision(Bullet[i].xPosition, Bullet[i].yPosition, Bullet[i].width, Bullet[i].height,
+                                    Asteroid[j].xPosition - camera.x - camera.x, Asteroid[j].yPosition - camera.y - camera.y,
+                                    Asteroid[j].width, Asteroid[j].height)){
 
-                    objectStorage[i].isDead = true;
-                    objectStorage[j].isDead = true;
+                    Bullet[i].isDead = true;
+                    Asteroid[j].isDead = true;
                 }
             }
         }
@@ -155,22 +158,22 @@ void randomize_asteroid_position()
     int randomAngle = rand() % 360;
 
     //start randomization where bullets left off.
-    objectStorage[currentAsteroid].xPosition = randomXPosition;
-    objectStorage[currentAsteroid].yPosition = randomYPosition;
-    objectStorage[currentAsteroid].angle = randomAngle;
+    Asteroid[currentAsteroid].xPosition = randomXPosition;
+    Asteroid[currentAsteroid].yPosition = randomYPosition;
+    Asteroid[currentAsteroid].angle = randomAngle;
 
     currentAsteroid += 1;
 }
 
 void init_button()
 {
-    objectStorage[0].xPosition = SCREEN_WIDTH / 2 - objectStorage[0].width / 2;
-    objectStorage[0].yPosition = 100;
-    objectStorage[0].fontTexture = fontTexture01;
+    Button[0].xPosition = SCREEN_WIDTH / 2 - Button[0].width / 2;
+    Button[0].yPosition = 100;
+    Button[0].fontTexture = fontTexture01;
 
-    objectStorage[1].xPosition = SCREEN_WIDTH / 2 - objectStorage[0].width / 2;
-    objectStorage[1].yPosition = 250;
-    objectStorage[1].fontTexture = fontTexture02;
+    Button[1].xPosition = SCREEN_WIDTH / 2 - Button[1].width / 2;
+    Button[1].yPosition = 250;
+    Button[1].fontTexture = fontTexture02;
 }
 
 bool check_collision(int xA, int yA, int wA, int hA, int xB, int yB, int wB, int hB)
@@ -215,28 +218,28 @@ void render_object()
 {
     //Render buttons
     for(int i = 0; i < MAX_BUTTONS; i++){
-        if(!objectStorage[i].isDead){
-            render_image(objectStorage[i].xPosition, objectStorage[i].yPosition, objectStorage[i].width,
-                        objectStorage[i].height, 0, objectStorage[i].texture, NULL, NULL, SDL_FLIP_NONE);
+        if(!Button[i].isDead){
+            render_image(Button[i].xPosition, Button[i].yPosition, Button[i].width,
+                        Button[i].height, 0, Button[i].texture, NULL, NULL, SDL_FLIP_NONE);
 
-            render_image(objectStorage[i].xPosition + 25, objectStorage[i].yPosition + 25, objectStorage[i].width - 50,
-                        objectStorage[i].height - 50, 0, objectStorage[i].fontTexture, NULL, NULL, SDL_FLIP_NONE);
+            render_image(Button[i].xPosition + 25, Button[i].yPosition + 25, Button[i].width - 50,
+                        Button[i].height - 50, 0, Button[i].fontTexture, NULL, NULL, SDL_FLIP_NONE);
         }
    }
 
     //Render bullets
-    for(int i = MAX_BUTTONS; i < MAX_BULLETS; i++){
-        if(!objectStorage[i].isDead){
-            render_image(objectStorage[i].xPosition, objectStorage[i].yPosition, objectStorage[i].width,
-                        objectStorage[i].height, objectStorage[i].angle, objectStorage[i].texture, NULL, NULL, SDL_FLIP_NONE);
+    for(int i = 0; i < MAX_BULLETS; i++){
+        if(!Bullet[i].isDead){
+            render_image(Bullet[i].xPosition, Bullet[i].yPosition, Bullet[i].width,
+                        Bullet[i].height, Bullet[i].angle, Bullet[i].texture, NULL, NULL, SDL_FLIP_NONE);
         }
     }
 
     //Render Asteroids
-    for(int i = MAX_BULLETS; i < MAX_BULLETS + MAX_ASTEROIDS; i++){
-        if(!objectStorage[i].isDead){
-            render_image(objectStorage[i].xPosition - camera.x - camera.x, objectStorage[i].yPosition - camera.y - camera.y, objectStorage[i].width,
-                        objectStorage[i].height, objectStorage[i].angle, objectStorage[i].texture, NULL, NULL, SDL_FLIP_NONE);
+    for(int i = 0; i < MAX_ASTEROIDS; i++){
+        if(!Asteroid[i].isDead){
+            render_image(Asteroid[i].xPosition - camera.x - camera.x, Asteroid[i].yPosition - camera.y - camera.y,
+                        Asteroid[i].width, Asteroid[i].height, Asteroid[i].angle, Asteroid[i].texture, NULL, NULL, SDL_FLIP_NONE);
         }
     }
 }
@@ -244,7 +247,9 @@ void render_object()
 void free_object_resources()
 {
     //Cleanup resources
-    free(objectStorage);
+    free(Button);
+    free(Bullet);
+    free(Asteroid);
 
     SDL_DestroyTexture(bulletTexture);
     SDL_DestroyTexture(asteroidTexture);

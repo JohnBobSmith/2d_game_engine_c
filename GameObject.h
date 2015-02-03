@@ -7,7 +7,7 @@
 //Contains our Object struct. All game objects (bullets, asteroids, etc.)
 //should make use of this struct.
 
-typedef struct Object
+typedef struct GameObject
 {
     SDL_Texture *texture;
     SDL_Texture *fontTexture;
@@ -19,9 +19,11 @@ typedef struct Object
 
     bool isDead;
 
-} object;
+} gameObject;
 
-object *objectStorage;
+gameObject *Button;
+gameObject *Bullet;
+gameObject *Asteroid;
 
 const int BULLET_VELOCITY;
 const int MAX_BUTTONS;
