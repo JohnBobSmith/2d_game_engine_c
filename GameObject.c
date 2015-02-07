@@ -1,7 +1,6 @@
 #include "GameObject.h"
 #include "Game.h"
 #include "GameAudio.h"
-#include "GameEffects.h"
 #include "Player.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,49 +9,77 @@
 SDL_Texture *bulletTexture = NULL;
 SDL_Texture *asteroidTexture = NULL;
 SDL_Texture *buttonTexture = NULL;
-SDL_Texture *fontTexture01 = NULL;
-SDL_Texture *fontTexture02 = NULL;
+SDL_Texture *fontTexturePlay = NULL;
+SDL_Texture *fontTextureExit = NULL;
+SDL_Texture *explosionTexture = NULL;
 
 const int BULLET_VELOCITY = 7;
 
 const int MAX_BUTTONS = 2;
+const int MAX_FONT_OBJECTS = 2;
 const int MAX_BULLETS = 25;
 const int MAX_ASTEROIDS = 15;
+const int MAX_EFFECTS = 15;
 
 int currentAsteroid = 0;
+int currentEffect = 0;
 
-void create_object()
+bool load_asteroid()
 {
-    //Allocate memory to all pointers of gameObject.
-    Button = malloc(sizeof(gameObject) * MAX_BUTTONS);
-    Bullet = malloc(sizeof(gameObject) * MAX_BULLETS);
+    char pathToAsteroidImage[] = "images/asteroid.png";
+
+    asteroidTexture = load_image_from_file(pathToAsteroidImage);
+    if(asteroidTexture == NULL){
+        printf("Failed to load %s ", pathToAsteroidImage);
+        return false;
+    }
+
+    return true;
+}
+
+bool load_bullet()
+{
+    char pathToBulletImage[] = "images/bullet.png";
+
+    bulletTexture = load_image_from_file(pathToBulletImage);
+    if(bulletTexture == NULL){
+        printf("Failed to load %s ", pathToBulletImage);
+        return false;
+    }
+
+    return true;
+}
+
+bool load_button()
+{
+    char pathToButtonImage[] = "images/button.png";
+
+    buttonTexture = load_image_from_file(pathToButtonImage);
+    if(buttonTexture == NULL){
+        printf("Failed to load %s. ", pathToButtonImage);
+        return false;
+    }
+
+    return true;
+}
+
+bool load_effect()
+{
+    char pathToExplosionImage[] = "images/effects/explosion.png";
+
+    explosionTexture = load_image_from_file(pathToExplosionImage);
+    if(explosionTexture == NULL){
+        printf("Failed to load %s. ", pathToExplosionImage);
+        return false;
+    }
+
+    return true;
+}
+
+
+void create_asteroid()
+{
     Asteroid = malloc(sizeof(gameObject) * MAX_ASTEROIDS);
-
-    for(int i = 0; i < MAX_BUTTONS; i++){
-        Button[i].angle = 0;
-        Button[i].xPosition = 0;
-        Button[i].yPosition = 0;
-        Button[i].width = 256;
-        Button[i].height = 96;
-        Button[i].xVelocity = 0;
-        Button[i].yVelocity = 0;
-        Button[i].texture = buttonTexture;
-        Button[i].fontTexture = NULL;
-        Button[i].isDead = true;
-    }
-
-    for(int i = 0; i < MAX_BULLETS; i++){
-        Bullet[i].angle = 0;
-        Bullet[i].xPosition = 0;
-        Bullet[i].yPosition = 0;
-        Bullet[i].width = 25;
-        Bullet[i].height = 50;
-        Bullet[i].xVelocity = 0;
-        Bullet[i].yVelocity = 0;
-        Bullet[i].texture = bulletTexture;
-        Bullet[i].fontTexture = NULL;
-        Bullet[i].isDead = true;
-    }
 
     for(int i = 0; i < MAX_ASTEROIDS; i++){
         Asteroid[i].angle = 0;
@@ -63,51 +90,161 @@ void create_object()
         Asteroid[i].xVelocity = 0;
         Asteroid[i].yVelocity = 0;
         Asteroid[i].texture = asteroidTexture;
-        Asteroid[i].fontTexture = NULL;
         Asteroid[i].isDead = true;
     }
 }
 
-bool load_object()
+void create_bullet()
 {
-    //Load images, and store them in the appropriate SDL_Texture
-    char pathToBulletImage[] = "images/bullet.png";
-    char pathToAsteroidImage[] = "images/asteroid.png";
-    char pathToButtonImage[] = "images/button.png";
+    //Allocate memory to bullets
+    Bullet = malloc(sizeof(gameObject) * MAX_BULLETS);
 
-    char text01[] = "PLAY";
-    char text02[] = "EXIT";
+    for(int i = 0; i < MAX_BULLETS; i++){
+        Bullet[i].angle = 0;
+        Bullet[i].xPosition = 0;
+        Bullet[i].yPosition = 0;
+        Bullet[i].width = 25;
+        Bullet[i].height = 50;
+        Bullet[i].xVelocity = 0;
+        Bullet[i].yVelocity = 0;
+        Bullet[i].texture = bulletTexture;
+        Bullet[i].isDead = true;
+    }
+}
+
+void create_button()
+{
+    Button = malloc(sizeof(gameObject) * MAX_BUTTONS);
+
+    for(int i = 0; i < MAX_BUTTONS; i++){
+        Button[i].angle = 0;
+        Button[i].xPosition = 0;
+        Button[i].yPosition = 0;
+        Button[i].width = 256;
+        Button[i].height = 96;
+        Button[i].xVelocity = 0;
+        Button[i].yVelocity = 0;
+        Button[i].texture = buttonTexture;
+        Button[i].isDead = true;
+    }
+}
+
+void create_effect()
+{
+    ExplosionFX = malloc(sizeof(gameObject) * MAX_EFFECTS);
+
+    for(int i = 0; i < MAX_EFFECTS; i++){
+        ExplosionFX[i].angle = 0;
+        ExplosionFX[i].xPosition = 250;
+        ExplosionFX[i].yPosition = 250;
+        ExplosionFX[i].width = 70;
+        ExplosionFX[i].height = 70;
+        ExplosionFX[i].xVelocity = 0;
+        ExplosionFX[i].yVelocity = 0;
+        ExplosionFX[i].texture = explosionTexture;
+        ExplosionFX[i].isDead = false;
+    }
+}
+
+void create_font_object()
+{
+    FontObject = malloc(sizeof(gameObject) * MAX_FONT_OBJECTS);
+
+    for(int i = 0; i < MAX_FONT_OBJECTS; i++){
+        FontObject[i].angle = 0;
+        FontObject[i].xPosition = 0;
+        FontObject[i].yPosition = 0;
+        FontObject[i].width = 200;
+        FontObject[i].height = 70;
+        FontObject[i].xVelocity = 0;
+        FontObject[i].yVelocity = 0;
+        FontObject[i].texture = NULL;
+        FontObject[i].isDead = true;
+    }
+}
+
+void init_button()
+{
+    Button[0].xPosition = SCREEN_WIDTH / 2 - Button[0].width / 2;
+    Button[0].yPosition = 100;
+
+    Button[1].xPosition = SCREEN_WIDTH / 2 - Button[1].width / 2;
+    Button[1].yPosition = 250;
+}
+
+void init_font_object()
+{
+    char textExit[] = "EXIT";
+    char textPlay[] = "PLAY";
 
     SDL_Color textColor = {255, 255, 255, 255};
 
-    bulletTexture = load_image_from_file(pathToBulletImage);
-    if(bulletTexture == NULL){
-        printf("Failed to load %s ", pathToBulletImage);
-        return false;
+    fontTextureExit = load_rendered_text(textExit, textColor);
+    fontTexturePlay = load_rendered_text(textPlay, textColor);
+
+    FontObject[0].xPosition = Button[0].xPosition + 25;
+    FontObject[0].yPosition = Button[0].yPosition + 12;
+    FontObject[0].texture = fontTexturePlay;
+
+    FontObject[1].xPosition = Button[1].xPosition + 25;
+    FontObject[1].yPosition = Button[1].yPosition + 12;
+    FontObject[1].texture = fontTextureExit;
+}
+
+void init_asteroid_position()
+{
+    //Randomize the asteroid positions.
+    int randomXPosition = rand() % (LEVEL_WIDTH - 100);
+    int randomYPosition = rand() % (LEVEL_HEIGHT - 100);
+    int randomAngle = rand() % 360;
+
+    //start randomization where bullets left off.
+    Asteroid[currentAsteroid].xPosition = randomXPosition;
+    Asteroid[currentAsteroid].yPosition = randomYPosition;
+    Asteroid[currentAsteroid].angle = randomAngle;
+    Asteroid[currentAsteroid].isDead = false;
+
+    currentAsteroid += 1;
+}
+
+void init_effect_position()
+{
+    ExplosionFX[currentEffect].xPosition = Asteroid[currentAsteroid].xPosition;
+    ExplosionFX[currentEffect].yPosition = Asteroid[currentAsteroid].yPosition;
+
+    currentEffect += 1;
+    currentAsteroid += 1;
+}
+
+bool load_gameobject_subsystem()
+{
+    char textPlay[] = "Play";
+    char textExit[] = "Exit";
+
+    SDL_Color textColor = {255, 255, 255, 255};
+
+    load_asteroid(); //Load all our files...
+    load_bullet();
+    load_button();
+    load_effect();
+
+    create_asteroid(); //And create the actual GameObject's associated with
+    create_bullet(); //Those files.
+    create_button();
+    create_font_object();
+    create_effect();
+
+    init_button(); //Initialize our buttons.
+    init_font_object(); //Initialize our font objects.
+
+    for(int i = 0; i < MAX_ASTEROIDS; i++){
+        init_asteroid_position(); //Randomly place asteroids.
     }
 
-    asteroidTexture = load_image_from_file(pathToAsteroidImage);
-    if(asteroidTexture == NULL){
-        printf("Failed to load %s ", pathToAsteroidImage);
-        return false;
-    }
+    currentAsteroid = 0;
 
-    buttonTexture = load_image_from_file(pathToButtonImage);
-    if(buttonTexture == NULL){
-        printf("Failed to load %s. ", pathToButtonImage);
-        return false;
-    }
-
-    fontTexture01 = load_rendered_text(text01, textColor);
-    if(fontTexture01 == NULL){
-        printf("Failed to load rendered text for fontTexture01...");
-        return false;
-    }
-
-    fontTexture02 = load_rendered_text(text02, textColor);
-    if(fontTexture02 == NULL){
-        printf("Failed to load rendered text for fontTexture02...");
-        return false;
+    for(int i = 0; i < MAX_EFFECTS; i++){
+        init_effect_position();
     }
 
     return true;
@@ -117,7 +254,7 @@ void move_bullet()
 {
     //Move our bullets if they are not dead.
     //Set the point of origin for spawning bullets
-    //to the player.
+    //to the player. Also check for collisions.
 
     for(int i = 0; i < MAX_BULLETS; i++){
         if(!Bullet[i].isDead){
@@ -136,44 +273,19 @@ void move_bullet()
             Bullet[i].yPosition = playerPositionY - camera.y;
         }
 
+        //If the bullets collide with the asteroids...
         for(int j = 0; j < MAX_ASTEROIDS; j++){
             if(!Bullet[i].isDead && !Asteroid[j].isDead){
                 if(check_collision(Bullet[i].xPosition, Bullet[i].yPosition, Bullet[i].width, Bullet[i].height,
                                     Asteroid[j].xPosition - camera.x - camera.x, Asteroid[j].yPosition - camera.y - camera.y,
                                     Asteroid[j].width, Asteroid[j].height)){
 
-                    Bullet[i].isDead = true;
+                    Bullet[i].isDead = true; //They both die.
                     Asteroid[j].isDead = true;
                 }
             }
         }
     }
-}
-
-void randomize_asteroid_position()
-{
-    //Randomize the asteroid positions.
-    int randomXPosition = rand() % (LEVEL_WIDTH - 100);
-    int randomYPosition = rand() % (LEVEL_HEIGHT - 100);
-    int randomAngle = rand() % 360;
-
-    //start randomization where bullets left off.
-    Asteroid[currentAsteroid].xPosition = randomXPosition;
-    Asteroid[currentAsteroid].yPosition = randomYPosition;
-    Asteroid[currentAsteroid].angle = randomAngle;
-
-    currentAsteroid += 1;
-}
-
-void init_button()
-{
-    Button[0].xPosition = SCREEN_WIDTH / 2 - Button[0].width / 2;
-    Button[0].yPosition = 100;
-    Button[0].fontTexture = fontTexture01;
-
-    Button[1].xPosition = SCREEN_WIDTH / 2 - Button[1].width / 2;
-    Button[1].yPosition = 250;
-    Button[1].fontTexture = fontTexture02;
 }
 
 bool check_collision(int xA, int yA, int wA, int hA, int xB, int yB, int wB, int hB)
@@ -214,19 +326,19 @@ bool check_collision(int xA, int yA, int wA, int hA, int xB, int yB, int wB, int
     return true;
 }
 
-void render_object()
+void render_buttons()
 {
     //Render buttons
     for(int i = 0; i < MAX_BUTTONS; i++){
         if(!Button[i].isDead){
             render_image(Button[i].xPosition, Button[i].yPosition, Button[i].width,
                         Button[i].height, 0, Button[i].texture, NULL, NULL, SDL_FLIP_NONE);
-
-            render_image(Button[i].xPosition + 25, Button[i].yPosition + 25, Button[i].width - 50,
-                        Button[i].height - 50, 0, Button[i].fontTexture, NULL, NULL, SDL_FLIP_NONE);
         }
-   }
+    }
+}
 
+void render_bullets()
+{
     //Render bullets
     for(int i = 0; i < MAX_BULLETS; i++){
         if(!Bullet[i].isDead){
@@ -234,7 +346,10 @@ void render_object()
                         Bullet[i].height, Bullet[i].angle, Bullet[i].texture, NULL, NULL, SDL_FLIP_NONE);
         }
     }
+}
 
+void render_asteroids()
+{
     //Render Asteroids
     for(int i = 0; i < MAX_ASTEROIDS; i++){
         if(!Asteroid[i].isDead){
@@ -244,22 +359,50 @@ void render_object()
     }
 }
 
-void free_object_resources()
+void render_effects()
+{
+    //Render effects for a short period of time.
+    for(int i = 0; i < MAX_EFFECTS; i++){
+        if(Asteroid[i].isDead){
+            ExplosionFX[i].angle += 2;
+            render_image(ExplosionFX[i].xPosition - camera.x - camera.x, ExplosionFX[i].yPosition - camera.y - camera.y,
+                            ExplosionFX[i].width, ExplosionFX[i].height, ExplosionFX[i].angle, ExplosionFX[i].texture,
+                            NULL, NULL, SDL_FLIP_NONE);
+        }
+    }
+}
+
+void render_font_objects()
+{
+    //Render font objects
+    for(int i = 0; i < MAX_FONT_OBJECTS; i++){
+        if(!FontObject[i].isDead){
+            render_image(FontObject[i].xPosition, FontObject[i].yPosition, FontObject[i].width, FontObject[i].height, 0,
+                                FontObject[i].texture, NULL, NULL, SDL_FLIP_NONE);
+        }
+    }
+}
+
+void free_gameobject_resources()
 {
     //Cleanup resources
     free(Button);
     free(Bullet);
     free(Asteroid);
+    free(FontObject);
+    free(ExplosionFX);
 
     SDL_DestroyTexture(bulletTexture);
     SDL_DestroyTexture(asteroidTexture);
     SDL_DestroyTexture(buttonTexture);
-    SDL_DestroyTexture(fontTexture01);
-    SDL_DestroyTexture(fontTexture02);
+    SDL_DestroyTexture(fontTexturePlay);
+    SDL_DestroyTexture(fontTextureExit);
+    SDL_DestroyTexture(explosionTexture);
 
     bulletTexture = NULL;
     asteroidTexture = NULL;
     buttonTexture = NULL;
-    fontTexture01 = NULL;
-    fontTexture02 = NULL;
+    fontTexturePlay = NULL;
+    fontTextureExit = NULL;
+    explosionTexture = NULL;
 }

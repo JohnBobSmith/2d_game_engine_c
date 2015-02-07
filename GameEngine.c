@@ -1,7 +1,6 @@
 #include "GameEngine.h"
 #include "Game.h"
 #include "GameObject.h"
-#include "GameEffects.h"
 #include "Player.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -163,18 +162,6 @@ void run_engine()
         printf("Failed to load game...");
     }
 
-    load_object(); //Load our GameObject structure and related files.
-    create_object(); //Create our GameObject's.
-
-    for(int i = 0; i < MAX_ASTEROIDS; i++){
-        randomize_asteroid_position(); //Randomly place asteroids.
-    }
-
-    //load_effect(); //load our effects files.
-    //init_effect(); //Create our effects.
-
-    init_button(); //init our buttons.
-
     while(isRunning){
         while(SDL_PollEvent(&event)){
             if(event.type == SDL_QUIT){
@@ -189,11 +176,6 @@ void run_engine()
         switch(GAME_STATE_CURRENT) //Check our game state variable...
         {
             case 1: //If equal to N value...
-                if(!didWeInitGame){
-                    init_game_state_play(); //Do something, like...
-                    didWeInitMenu = false;
-                    didWeInitGame = true;
-                }
                 move_bullet(); //Moving our objects and the player.
                 move_player();
                 move_camera();
@@ -201,11 +183,6 @@ void run_engine()
                 break;
 
             case 2:
-                if(!didWeInitMenu){
-                    init_game_state_menu();
-                    didWeInitMenu = true;
-                    didWeInitGame = false;
-                }
                 render_menu();
                 break;
 
@@ -217,9 +194,7 @@ void run_engine()
             default:
                 printf("Something went horribly wrong with the game state system...\n");
                 printf("Now exiting game.");
-                close_game();
-                close_engine();
-                break;
+                isRunning = false;
         }
 
         SDL_RenderPresent(engineRenderer); //Finally, update the frame and render it to the screen.

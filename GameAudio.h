@@ -6,7 +6,7 @@
 Mix_Chunk *laserShoot;
 Mix_Chunk *asteroidExplode;
 
-bool load_audio();
+bool load_audio_subsystem();
 void play_sfx(Mix_Chunk *nameOfChunk);
 void close_audio();
 

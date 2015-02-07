@@ -1,6 +1,5 @@
 #include "Game.h"
 #include "GameObject.h"
-#include "GameAudio.h"
 #include "Player.h"
 #include<stdio.h>
 
@@ -8,14 +7,15 @@
 SDL_Texture *backgroundTexture = NULL;
 SDL_Texture *menuTexture = NULL;
 
-GAME_STATE_CURRENT = 2; //The current state of the game.
+GAME_STATE_CURRENT = 1; //The current state of the game.
 //For the above variable, 3 is exit, 2 is menu, 1 is playing.
 const int LEVEL_WIDTH = 1280;
 const int LEVEL_HEIGHT = 960;
 
 bool init_game()
 {
-    //initialize and load our player and the camera, and other things
+    //initialize and load our player and the camera, and
+    //certain subsystems.
     camera.x = 0;
     camera.y = 0;
     camera.w = SCREEN_WIDTH;
@@ -31,8 +31,13 @@ bool init_game()
         return false;
     }
 
-    if(!load_audio()){
-        printf("Failed to load audio...");
+    if(!load_audio_subsystem()){
+        printf("Failed to load audio subsystem...");
+        return false;
+    }
+
+    if(!load_gameobject_subsystem()){
+        printf("Failed to load gameobject subsystem...");
         return false;
     }
 
@@ -58,28 +63,6 @@ bool load_game()
     }
 
     return true;
-}
-
-void init_game_state_menu()
-{
-    for(int i = 0; i < MAX_BUTTONS; i++){
-        Button[i].isDead = false;
-    }
-
-    for(int i = 0; i < MAX_BULLETS; i++){
-        Bullet[i].isDead = true;
-    }
-
-    for(int i = 0; i < MAX_ASTEROIDS; i++){
-        Asteroid[i].isDead = true;
-    }
-}
-
-void init_game_state_play()
-{
-    for(int i = 0; i < MAX_BUTTONS; i++){
-        Button[i].isDead = true;
-    }
 }
 
 void move_camera()
@@ -113,13 +96,22 @@ void render_game()
     //The background must always be first!
     render_image(0, 0, LEVEL_WIDTH, LEVEL_HEIGHT, 0, backgroundTexture, &camera, NULL, SDL_FLIP_NONE);
     render_player(camera.x, camera.y);
-    render_object();
+    render_asteroids();
+    render_bullets();
+    render_effects();
 }
 
 void render_menu()
 {
+    Button[0].isDead = false;
+    Button[1].isDead = false;
+
+    FontObject[0].isDead = false;
+    FontObject[1].isDead = false;
+
     render_image(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, menuTexture, NULL, NULL, SDL_FLIP_NONE);
-    render_object();
+    render_buttons();
+    render_font_objects();
 }
 
 
@@ -129,5 +121,6 @@ void close_game()
     SDL_DestroyTexture(backgroundTexture);
     backgroundTexture = NULL;
     free_player_resources();
+    free_gameobject_resources();
     close_audio();
 }
