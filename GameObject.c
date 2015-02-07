@@ -18,8 +18,8 @@ const int BULLET_VELOCITY = 7;
 const int MAX_BUTTONS = 2;
 const int MAX_FONT_OBJECTS = 2;
 const int MAX_BULLETS = 25;
-const int MAX_ASTEROIDS = 15;
-const int MAX_EFFECTS = 15;
+const int MAX_ASTEROIDS = 50;
+const int MAX_EFFECTS = 50;
 
 int currentAsteroid = 0;
 int currentEffect = 0;
@@ -361,13 +361,20 @@ void render_asteroids()
 
 void render_effects()
 {
+    int asteroidIndex;
     //Render effects for a short period of time.
     for(int i = 0; i < MAX_EFFECTS; i++){
         if(Asteroid[i].isDead){
-            ExplosionFX[i].angle += 2;
-            render_image(ExplosionFX[i].xPosition - camera.x - camera.x, ExplosionFX[i].yPosition - camera.y - camera.y,
-                            ExplosionFX[i].width, ExplosionFX[i].height, ExplosionFX[i].angle, ExplosionFX[i].texture,
-                            NULL, NULL, SDL_FLIP_NONE);
+            asteroidIndex = i;
+            ExplosionFX[asteroidIndex].angle += 2;
+            render_image(ExplosionFX[asteroidIndex].xPosition - camera.x - camera.x, ExplosionFX[asteroidIndex].yPosition - camera.y - camera.y,
+                            ExplosionFX[asteroidIndex].width, ExplosionFX[asteroidIndex].height, ExplosionFX[asteroidIndex].angle,
+                            ExplosionFX[asteroidIndex].texture, NULL, NULL, SDL_FLIP_NONE);
+        }
+        if(ExplosionFX[asteroidIndex].angle > 180){
+            Asteroid[asteroidIndex].isDead = false; //This would normally render our asteroid.
+            Asteroid[asteroidIndex].xPosition = 9999; //But we move it off screen.
+            Asteroid[asteroidIndex].yPosition = 9999;
         }
     }
 }
