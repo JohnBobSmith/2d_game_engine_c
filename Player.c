@@ -7,7 +7,7 @@
 
 //Some global player variables
 SDL_Texture *playerTexture = NULL;
-const int PLAYER_VELOCITY = 2;
+const int PLAYER_VELOCITY = 5;
 int currentBullet = 2;
 int mouseAngle;
 bool isMousePressed = false;
@@ -151,17 +151,17 @@ void handle_player_events(SDL_Event *event)
 void move_player()
 {
     //Move our player by adding the velocities to the positions.
-    playerPositionX += playerVelocityX;
-    playerPositionY += playerVelocityY;
+    playerPositionX += playerVelocityX / 60.0f;
+    playerPositionY += playerVelocityY / 60.0f;
 
     //If the player moves off screen on the X axis...
     if(playerPositionX < 0 || (playerPositionX + playerWidth) > LEVEL_WIDTH){
-        playerPositionX -= playerVelocityX; //Stop movement.
+        //playerPositionX = SCREEN_WIDTH - playerWidth; //Stop movement.
     }
 
     //If the player moves off screen on the Y axis...
     if(playerPositionY < 0 || (playerPositionY + playerHeight) > LEVEL_HEIGHT){
-        playerPositionY -= playerVelocityY; //Stop movement.
+        //playerPositionY = SCREEN_HEIGHT - playerHeight; //Stop movement.
     }
 
     for(int i = 0; i < MAX_ASTEROIDS; i++){ //If we run into the asteroids...

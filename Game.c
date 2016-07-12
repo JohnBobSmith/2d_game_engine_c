@@ -68,8 +68,8 @@ bool load_game()
 void move_camera()
 {
     //Move the camera based on the players current position.
-    camera.x = (playerPositionX + playerWidth / 2) - SCREEN_WIDTH / 2;
-    camera.y = (playerPositionY + playerHeight / 2) - SCREEN_HEIGHT / 2;
+    camera.x = ((playerPositionX + playerWidth / 2) - SCREEN_WIDTH / 2);
+    camera.y = ((playerPositionY + playerHeight / 2) - SCREEN_HEIGHT / 2);
 
     //If the camera moves off screen in any way...
     if(camera.x < 0) {

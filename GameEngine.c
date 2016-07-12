@@ -2,9 +2,11 @@
 #include "Game.h"
 #include "GameObject.h"
 #include "Player.h"
+#include "Timer.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+
 
 //Some global engine variables.
 const int SCREEN_WIDTH = 640;
@@ -28,7 +30,7 @@ SDL_Texture *load_rendered_text(char text[], SDL_Color textColor)
     } else {
         newTexture = SDL_CreateTextureFromSurface(engineRenderer, textSurface);
         if(newTexture == NULL){
-            printf("Failed to create texture from surface... SDL Error: ", SDL_GetError());
+            printf("Failed to create texture from surface... SDL Error: %s", SDL_GetError());
         }
         SDL_FreeSurface(textSurface);
     }
@@ -75,7 +77,7 @@ bool init_engine()
         printf("Linear texture filtering not enabled....");
     }
 
-    engineWindow = SDL_CreateWindow("Game Engine", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    engineWindow = SDL_CreateWindow("Asteroids clone!", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if(engineWindow == NULL){
         printf("Failed to create window... SDL Error: %s", SDL_GetError());
         return false;
@@ -169,6 +171,7 @@ void run_engine()
             }
             handle_player_events(&event);
         }
+
         //Call SDL_RenderClear at start to avoid the chance of
         //having weird visuals.
         SDL_RenderClear(engineRenderer);
@@ -179,7 +182,9 @@ void run_engine()
                 move_bullet(); //Moving our objects and the player.
                 move_player();
                 move_camera();
-                render_game(); //And rendering images.
+                //Reset the timer
+                start();
+                render_game();
                 break;
 
             case 2:

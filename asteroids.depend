@@ -1,0 +1,71 @@
+# depslib dependency file v1.0
+1468340849 source:/home/jbs/cpp/asteroids/Game.c
+	"Game.h"
+	"GameObject.h"
+	"Player.h"
+	<stdio.h>
+
+1468340860 /home/jbs/cpp/asteroids/Game.h
+	"GameEngine.h"
+
+1468335038 /home/jbs/cpp/asteroids/GameEngine.h
+	<SDL2/SDL.h>
+	<SDL2/SDL_image.h>
+	<SDL2/SDL_ttf.h>
+	<SDL2/SDL_mixer.h>
+	<stdbool.h>
+
+1468335038 /home/jbs/cpp/asteroids/GameObject.h
+	"GameEngine.h"
+	<stdbool.h>
+
+1468343683 /home/jbs/cpp/asteroids/Player.h
+	"GameEngine.h"
+
+1468335038 source:/home/jbs/cpp/asteroids/GameAudio.c
+	"GameAudio.h"
+
+1468335038 /home/jbs/cpp/asteroids/GameAudio.h
+	"GameEngine.h"
+
+1468343479 source:/home/jbs/cpp/asteroids/GameEngine.c
+	"GameEngine.h"
+	"Game.h"
+	"GameObject.h"
+	"Player.h"
+	"Timer.h"
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+
+1468335038 source:/home/jbs/cpp/asteroids/GameObject.c
+	"GameObject.h"
+	"Game.h"
+	"GameAudio.h"
+	"Player.h"
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+
+1468335038 source:/home/jbs/cpp/asteroids/main.c
+	"GameEngine.h"
+
+1468343741 source:/home/jbs/cpp/asteroids/Player.c
+	"Player.h"
+	"Game.h"
+	"GameObject.h"
+	"GameAudio.h"
+	<math.h>
+	<stdio.h>
+
+1468339388 source:/home/jbs/cpp/asteroids/Timer.cpp
+	"Timer.h"
+
+1468339743 /home/jbs/cpp/asteroids/Timer.h
+	<SDL2/SDL.h>
+	<stdint.h>
+	<stdbool.h>
+
+1468339698 source:/home/jbs/cpp/asteroids/Timer.c
+	"Timer.h"
+

@@ -8,8 +8,8 @@
 
 const int PLAYER_VELOCITY;
 
-int playerPositionX, playerPositionY;
-int playerVelocityX, playerVelocityY;
+float playerPositionX, playerPositionY;
+float playerVelocityX, playerVelocityY;
 int playerWidth, playerHeight;
 int playerAngle;
 
