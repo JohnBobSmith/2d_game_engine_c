@@ -1,0 +1,8 @@
+#Ignore code blocks stuff...
+*.cbp 
+*.depend
+*.layout
+
+#Ignore bin and obj dirs...
+bin
+obj
