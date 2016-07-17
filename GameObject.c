@@ -366,12 +366,12 @@ void render_effects()
     for(int i = 0; i < MAX_EFFECTS; i++){
         if(Asteroid[i].isDead){
             asteroidIndex = i;
-            ExplosionFX[asteroidIndex].angle += 2;
+            ExplosionFX[asteroidIndex].angle += 1;
             render_image(ExplosionFX[asteroidIndex].xPosition - camera.x - camera.x, ExplosionFX[asteroidIndex].yPosition - camera.y - camera.y,
                             ExplosionFX[asteroidIndex].width, ExplosionFX[asteroidIndex].height, ExplosionFX[asteroidIndex].angle,
                             ExplosionFX[asteroidIndex].texture, NULL, NULL, SDL_FLIP_NONE);
         }
-        if(ExplosionFX[asteroidIndex].angle > 180){
+        if(ExplosionFX[asteroidIndex].angle > 360){
             Asteroid[asteroidIndex].isDead = false; //This would normally render our asteroid.
             Asteroid[asteroidIndex].xPosition = 9999; //But we move it off screen.
             Asteroid[asteroidIndex].yPosition = 9999;
