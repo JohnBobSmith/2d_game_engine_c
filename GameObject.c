@@ -366,7 +366,7 @@ void render_effects()
     for(int i = 0; i < MAX_EFFECTS; i++){
         if(Asteroid[i].isDead){
             asteroidIndex = i;
-            ExplosionFX[asteroidIndex].angle += 1;
+            ExplosionFX[asteroidIndex].angle += 5;
             render_image(ExplosionFX[asteroidIndex].xPosition - camera.x - camera.x, ExplosionFX[asteroidIndex].yPosition - camera.y - camera.y,
                             ExplosionFX[asteroidIndex].width, ExplosionFX[asteroidIndex].height, ExplosionFX[asteroidIndex].angle,
                             ExplosionFX[asteroidIndex].texture, NULL, NULL, SDL_FLIP_NONE);

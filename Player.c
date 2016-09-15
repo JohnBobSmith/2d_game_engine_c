@@ -7,7 +7,7 @@
 
 //Some global player variables
 SDL_Texture *playerTexture = NULL;
-const int PLAYER_VELOCITY = 5;
+const int PLAYER_VELOCITY = 50;
 int currentBullet = 2;
 int mouseAngle;
 bool isMousePressed = false;

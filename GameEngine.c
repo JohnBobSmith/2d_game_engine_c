@@ -77,7 +77,8 @@ bool init_engine()
         printf("Linear texture filtering not enabled....");
     }
 
-    engineWindow = SDL_CreateWindow("JBS Asteroids-ish clone", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    engineWindow = SDL_CreateWindow("Spacey Rocks", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                                    SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if(engineWindow == NULL){
         printf("Failed to create window... SDL Error: %s", SDL_GetError());
         return false;
